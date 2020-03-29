@@ -45,8 +45,8 @@ function App() {
       params: {
         symbol: 'GOOG',
         resolution: 'D',
-        from: Date.now(),
-        to: 1572910590
+        from: new Date('2019.01.01').getTime() / 1000,
+        to: new Date('2020.01.01').getTime() / 1000
       }
     })
       .then(response => {
