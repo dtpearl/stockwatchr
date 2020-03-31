@@ -92,15 +92,10 @@ function App() {
         ) : (
           <img src={logo} className='App-logo' alt='logo' />
         )}
-
-        {symbolsData && (
-          <>
-            <p>{`The number of items returned is ${symbolsData.length}`}</p>
-            <p>{`The number of items returned is ${symbolsData.length}`}</p>
-            <p>{`The number of items returned is ${symbolsData.length}`}</p>
-            <p>{`The number of items returned is ${symbolsData.length}`}</p>
-          </>
-        )}
+        {symbolsData &&
+          symbolsData.map((symbol, i) => {
+            return <p key={i}>{symbol.symbol.slice(0, -3)}</p>;
+          })}
         <a
           className='App-link'
           href='https://reactjs.org'
