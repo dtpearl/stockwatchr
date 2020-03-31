@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FINNHUB_API_TOKEN from '../src/authtoken';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [symbolsData, setSymbolsData] = useState(null);
   const [exchangeData, setExchangeData] = useState(null);
+  const [candleData, setCandleData] = useState(null);
 
   const getStockExchanges = () => {
     setLoading(true);
     axios({
       method: 'GET',
       url: 'https://finnhub.io/api/v1/stock/exchange',
-      headers: {
-        'content-type': 'application/octet-stream',
-        'x-rapidapi-host': 'finnhub-realtime-stock-price.p.rapidapi.com',
-        'x-rapidapi-key': '0528c28546msh55d3c2717da7e56p1dd338jsn36e304b63751'
+      params: {
+        token: FINNHUB_API_TOKEN
       }
     })
       .then(response => {
@@ -32,26 +32,44 @@ function App() {
       });
   };
 
-  const stockSymbolRequest = () => {
+  const getStockSymbols = () => {
     setLoading(true);
     axios({
       method: 'GET',
-      url: 'https://finnhub-realtime-stock-price.p.rapidapi.com/stock/candle',
-      headers: {
-        'content-type': 'application/octet-stream',
-        'x-rapidapi-host': 'finnhub-realtime-stock-price.p.rapidapi.com',
-        'x-rapidapi-key': '0528c28546msh55d3c2717da7e56p1dd338jsn36e304b63751'
-      },
+      url: 'https://finnhub.io/api/v1/stock/symbol',
       params: {
-        symbol: 'GOOG',
-        resolution: 'D',
-        from: new Date('2019.01.01').getTime() / 1000,
-        to: new Date('2020.01.01').getTime() / 1000
+        token: FINNHUB_API_TOKEN,
+        exchange: 'AX'
       }
     })
       .then(response => {
         console.log(response);
-        setData(response.data);
+        setSymbolsData(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.log(error);
+        setLoading(false);
+      });
+  };
+
+  const getStockCandle = () => {
+    setLoading(true);
+    axios({
+      method: 'GET',
+      url: 'https://finnhub.io/api/v1/stock/candle',
+      params: {
+        token: FINNHUB_API_TOKEN,
+        exchange: 'AX',
+        symbol: 'VAF.AX',
+        resolution: 'D',
+        from: new Date('2020.01.01').getTime() / 1000,
+        to: new Date('2020.03.30').getTime() / 1000
+      }
+    })
+      .then(response => {
+        console.log(response);
+        setCandleData(response.data);
         setLoading(false);
       })
       .catch(error => {
@@ -62,7 +80,8 @@ function App() {
 
   useEffect(() => {
     getStockExchanges();
-    stockSymbolRequest();
+    getStockSymbols();
+    getStockCandle();
   }, []);
 
   return (
@@ -74,12 +93,12 @@ function App() {
           <img src={logo} className='App-logo' alt='logo' />
         )}
 
-        {data && (
+        {symbolsData && (
           <>
-            <p>{`The number of items returned is ${data.length}`}</p>
-            <p>{`The number of items returned is ${data.length}`}</p>
-            <p>{`The number of items returned is ${data.length}`}</p>
-            <p>{`The number of items returned is ${data.length}`}</p>
+            <p>{`The number of items returned is ${symbolsData.length}`}</p>
+            <p>{`The number of items returned is ${symbolsData.length}`}</p>
+            <p>{`The number of items returned is ${symbolsData.length}`}</p>
+            <p>{`The number of items returned is ${symbolsData.length}`}</p>
           </>
         )}
         <a
